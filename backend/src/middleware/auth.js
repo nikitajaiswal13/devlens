@@ -24,7 +24,7 @@ async function protect(req, res, next) {
     let decoded;
     try {
       decoded = verifyToken(token);
-    } catch (error) {
+    } catch {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired token",
