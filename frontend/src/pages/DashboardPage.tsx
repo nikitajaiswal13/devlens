@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -6,11 +6,33 @@ import { CodeAnalysisView } from './CodeAnalysisView';
 
 type NavTab = 'overview' | 'code-analysis' | 'architecture-review' | 'history';
 
+const getTabFromLocation = (pathname: string, search: string): NavTab => {
+  if (pathname === '/code-analysis' || pathname === '/analysis') {
+    return 'code-analysis';
+  }
+  const params = new URLSearchParams(search);
+  const tab = params.get('tab');
+  if (tab === 'code-analysis') return 'code-analysis';
+  if (tab === 'architecture-review') return 'architecture-review';
+  if (tab === 'history') return 'history';
+  return 'overview';
+};
+
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<NavTab>('overview');
   const navigate = useNavigate();
   const location = useLocation();
+  const activeTab = getTabFromLocation(location.pathname, location.search);
+
+  const handleTabChange = (tab: NavTab) => {
+    if (tab === 'code-analysis') {
+      navigate('/code-analysis');
+    } else if (tab === 'overview') {
+      navigate('/dashboard');
+    } else {
+      navigate(`/dashboard?tab=${tab}`);
+    }
+  };
 
   const handleLogoutClick = () => {
     navigate('/logout', { state: { from: location.pathname } });
@@ -53,7 +75,7 @@ export const DashboardPage: React.FC = () => {
             <button
               type="button"
               className={`nav-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
-              onClick={() => setActiveTab('overview')}
+              onClick={() => handleTabChange('overview')}
             >
               <span className="nav-tab-title">Overview</span>
             </button>
@@ -61,7 +83,7 @@ export const DashboardPage: React.FC = () => {
             <button
               type="button"
               className={`nav-tab-btn ${activeTab === 'code-analysis' ? 'active' : ''}`}
-              onClick={() => setActiveTab('code-analysis')}
+              onClick={() => handleTabChange('code-analysis')}
             >
               <span className="nav-tab-title">Code Analysis</span>
               <span className="tab-badge active-badge">Ready</span>
@@ -70,7 +92,7 @@ export const DashboardPage: React.FC = () => {
             <button
               type="button"
               className={`nav-tab-btn ${activeTab === 'architecture-review' ? 'active' : ''}`}
-              onClick={() => setActiveTab('architecture-review')}
+              onClick={() => handleTabChange('architecture-review')}
             >
               <span className="nav-tab-title">Architecture Review</span>
               <span className="tab-badge">Soon</span>
@@ -79,7 +101,7 @@ export const DashboardPage: React.FC = () => {
             <button
               type="button"
               className={`nav-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
-              onClick={() => setActiveTab('history')}
+              onClick={() => handleTabChange('history')}
             >
               <span className="nav-tab-title">Analysis History</span>
               <span className="tab-badge">Soon</span>
@@ -115,7 +137,7 @@ export const DashboardPage: React.FC = () => {
                   <button
                     type="button"
                     className="btn-primary start-analysis-btn"
-                    onClick={() => setActiveTab('code-analysis')}
+                    onClick={() => handleTabChange('code-analysis')}
                   >
                     Open Code Analysis →
                   </button>
@@ -185,14 +207,14 @@ export const DashboardPage: React.FC = () => {
                   <button
                     type="button"
                     className="btn-primary"
-                    onClick={() => setActiveTab('code-analysis')}
+                    onClick={() => handleTabChange('code-analysis')}
                   >
                     Go to Code Analysis →
                   </button>
                   <button
                     type="button"
                     className="btn-secondary"
-                    onClick={() => setActiveTab('overview')}
+                    onClick={() => handleTabChange('overview')}
                   >
                     Back to Overview
                   </button>
@@ -213,14 +235,14 @@ export const DashboardPage: React.FC = () => {
                   <button
                     type="button"
                     className="btn-primary"
-                    onClick={() => setActiveTab('code-analysis')}
+                    onClick={() => handleTabChange('code-analysis')}
                   >
                     Go to Code Analysis →
                   </button>
                   <button
                     type="button"
                     className="btn-secondary"
-                    onClick={() => setActiveTab('overview')}
+                    onClick={() => handleTabChange('overview')}
                   >
                     Back to Overview
                   </button>

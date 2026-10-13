@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { User, LoginPayload, RegisterPayload } from '../types/auth';
 import { authApi, tokenStorage, ApiError } from '../services/api';
 import { AuthContext } from './authContextBase';
@@ -6,8 +6,7 @@ import { AuthContext } from './authContextBase';
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(tokenStorage.get());
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState<boolean>(() => Boolean(tokenStorage.get()));
 
   useEffect(() => {
     let isMounted = true;
@@ -27,21 +26,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const response = await authApi.getCurrentUser();
         if (isMounted) {
-          startTransition(() => {
-            setUser(response.user);
-            setToken(storedToken);
-            setIsLoading(false);
-          });
+          setUser(response.user);
+          setToken(storedToken);
+          setIsLoading(false);
         }
       } catch {
         // Token is invalid or expired
         tokenStorage.remove();
         if (isMounted) {
-          startTransition(() => {
-            setUser(null);
-            setToken(null);
-            setIsLoading(false);
-          });
+          setUser(null);
+          setToken(null);
+          setIsLoading(false);
         }
       }
     }

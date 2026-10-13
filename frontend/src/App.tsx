@@ -24,6 +24,8 @@ const AppRoutes: React.FC = () => {
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/code-analysis" element={<DashboardPage />} />
+        <Route path="/analysis" element={<DashboardPage />} />
       </Route>
 
       {/* Logout confirmation route */}
