@@ -78,46 +78,26 @@ export const CodeAnalysisView: React.FC = () => {
 
   return (
     <div className="analysis-page-shell">
-      {/* Top Header of the Analysis Workspace */}
-      <section className="analysis-view-header">
-        <div className="header-meta-group">
-          <span className="module-chip">STATIC ANALYSIS ENGINE</span>
-          <h1 className="module-title">Source Code Parser & Linter</h1>
-          <p className="module-description">
-            Run in-memory Babel AST parsing and ESLint static verification across modern JavaScript and JSX.
+      {/* Page Header */}
+      <section className="analysis-page-header">
+        <div className="analysis-header-copy">
+          <h1 className="analysis-page-title">Code Analysis</h1>
+          <p className="analysis-page-description">
+            Inspect JavaScript and JSX source code using Babel for AST parsing and ESLint for code quality checks.
           </p>
-        </div>
-
-        <div className="header-actions">
-          <button
-            type="button"
-            className="tech-secondary-btn"
-            onClick={handleResetToExample}
-            disabled={isAnalyzing}
-          >
-            LOAD SAMPLE CODE
-          </button>
-          <button
-            type="button"
-            className="tech-secondary-btn"
-            onClick={handleClear}
-            disabled={isAnalyzing}
-          >
-            CLEAR BUFFER
-          </button>
         </div>
       </section>
 
-      {/* Input Controls Bar */}
-      <div className="analysis-toolbar">
-        <div className="toolbar-field">
-          <label htmlFor="analysis-filename" className="toolbar-label">
-            TARGET FILENAME:
+      {/* Controls Bar */}
+      <div className="analysis-controls-bar">
+        <div className="controls-left">
+          <label htmlFor="analysis-filename" className="filename-label">
+            Filename:
           </label>
           <input
             id="analysis-filename"
             type="text"
-            className="toolbar-input"
+            className="filename-input"
             value={filename}
             onChange={(e) => setFilename(e.target.value)}
             placeholder="example.js"
@@ -125,47 +105,53 @@ export const CodeAnalysisView: React.FC = () => {
           />
         </div>
 
-        <button
-          type="button"
-          className="tech-primary-btn analyze-submit-btn"
-          onClick={handleAnalyze}
-          disabled={isAnalyzing}
-        >
-          {isAnalyzing ? (
-            <span className="btn-loading-state">
-              <span className="terminal-busy-indicator" />
-              PARSING & LINTING...
-            </span>
-          ) : (
-            'RUN STATIC ANALYSIS →'
-          )}
-        </button>
+        <div className="controls-actions">
+          <button
+            type="button"
+            className="btn-secondary small"
+            onClick={handleResetToExample}
+            disabled={isAnalyzing}
+          >
+            Load Sample Code
+          </button>
+          <button
+            type="button"
+            className="btn-secondary small"
+            onClick={handleClear}
+            disabled={isAnalyzing}
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            className="btn-primary analyze-submit-btn"
+            onClick={handleAnalyze}
+            disabled={isAnalyzing}
+          >
+            {isAnalyzing ? 'Analyzing...' : 'Analyze Code'}
+          </button>
+        </div>
       </div>
 
-      {/* Error Notices */}
+      {/* Alerts */}
       {clientError && (
-        <div className="tech-alert tech-alert-warning" role="alert">
-          <span className="alert-badge-warn">WARN</span>
-          <span className="alert-content">{clientError}</span>
+        <div className="analysis-alert warning" role="alert">
+          <span className="alert-text">{clientError}</span>
         </div>
       )}
 
       {serverError && (
-        <div className="tech-alert tech-alert-error" role="alert">
-          <span className="alert-badge">ERR</span>
-          <span className="alert-content">{serverError}</span>
+        <div className="analysis-alert error" role="alert">
+          <span className="alert-text">{serverError}</span>
         </div>
       )}
 
-      {/* Editor & Analysis Workspace */}
+      {/* Split Grid: Editor + Results */}
       <div className="analysis-split-grid">
-        {/* Left: Code Editor Pane */}
+        {/* Editor Panel */}
         <div className="code-editor-panel">
           <div className="editor-chrome-bar">
-            <div className="file-tab active">
-              <span className="file-lang-dot" />
-              <span>{filename.trim() || 'snippet.js'}</span>
-            </div>
+            <span className="editor-tab-label">{filename.trim() || 'snippet.js'}</span>
             <div className="editor-stats">
               <span>{code.split(/\r\n|\r|\n/).length} lines</span>
               <span>•</span>
@@ -187,61 +173,55 @@ export const CodeAnalysisView: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: Telemetry & Findings Pane */}
+        {/* Results Panel */}
         <div className="analysis-results-panel">
           {!analysisResult && !isAnalyzing && (
-            <div className="empty-results-state">
-              <div className="empty-state-icon">λ</div>
-              <h3>No Analysis Run Yet</h3>
-              <p>
-                Configure the target filename and enter source code into the editor, then click
-                <strong> Run Static Analysis</strong> to compute AST metrics, line counts, and actionable code quality issues.
+            <div className="empty-results-box">
+              <h3 className="empty-results-title">No Analysis Run Yet</h3>
+              <p className="empty-results-text">
+                Your results will appear here after analysis. Click <strong>Analyze Code</strong> to view AST metrics and detect lint issues.
               </p>
             </div>
           )}
 
           {isAnalyzing && (
-            <div className="analyzing-state">
-              <div className="terminal-busy-spinner" />
-              <p className="analyzing-status">Invoking @babel/parser and ESLint verification...</p>
+            <div className="analyzing-state-box">
+              <div className="analyzing-spinner" />
+              <p className="analyzing-text">Analyzing source code...</p>
             </div>
           )}
 
           {analysisResult && !isAnalyzing && (
             <div className="results-wrapper">
               {/* Parse Status Banner */}
-              <div className={`parse-status-banner ${analysisResult.parsed ? 'parsed-ok' : 'parsed-error'}`}>
-                <div className="status-main">
-                  <span className="status-glyph">{analysisResult.parsed ? '✓' : '✗'}</span>
+              <div className={`status-banner ${analysisResult.parsed ? 'success' : 'error'}`}>
+                <div className="status-banner-content">
+                  <span className="status-indicator-icon">{analysisResult.parsed ? '✓' : '✕'}</span>
                   <div>
-                    <h3 className="status-heading">
-                      {analysisResult.parsed ? 'AST Generation Successful' : 'Syntax Parsing Error'}
+                    <h3 className="status-banner-title">
+                      {analysisResult.parsed ? 'Parsing Successful' : 'Syntax Error'}
                     </h3>
-                    <p className="status-sub">
-                      Target: <code>{analysisResult.filename}</code> • Dialect: {analysisResult.language}
+                    <p className="status-banner-sub">
+                      File: <code>{analysisResult.filename}</code> • Language: {analysisResult.language}
                     </p>
                   </div>
                 </div>
-                <div className="status-tag-pill">
-                  {analysisResult.parsed ? 'AST VALID' : 'SYNTAX REJECTED'}
-                </div>
               </div>
 
-              {/* Syntax Errors Section (if any) */}
+              {/* Syntax Errors */}
               {analysisResult.errors.length > 0 && (
-                <div className="findings-section syntax-errors-block">
-                  <div className="section-header-row">
-                    <h4 className="findings-title error-title">SYNTAX PARSING DIAGNOSTICS</h4>
-                    <span className="badge-count error-badge">{analysisResult.errors.length}</span>
+                <div className="results-card errors-card">
+                  <div className="results-card-header">
+                    <h4 className="results-card-title">Syntax Errors ({analysisResult.errors.length})</h4>
                   </div>
                   <div className="findings-list">
                     {analysisResult.errors.map((err, idx) => (
                       <div key={idx} className="finding-item error-item">
-                        <div className="finding-meta-row">
-                          <span className="finding-loc">
-                            LINE {err.line ?? '?'}, COL {err.column ?? '?'}
+                        <div className="finding-meta">
+                          <span className="finding-location">
+                            Line {err.line ?? '?'}, Col {err.column ?? '?'}
                           </span>
-                          <span className="finding-rule-tag">{err.code}</span>
+                          {err.code && <span className="finding-tag">{err.code}</span>}
                         </div>
                         <div className="finding-message">{err.message}</div>
                       </div>
@@ -250,55 +230,52 @@ export const CodeAnalysisView: React.FC = () => {
                 </div>
               )}
 
-              {/* Metrics Summary Grid */}
-              <div className="metrics-summary-box">
-                <div className="section-header-row">
-                  <h4 className="findings-title">AST & CODE METRICS</h4>
+              {/* Code Metrics */}
+              <div className="results-card">
+                <div className="results-card-header">
+                  <h4 className="results-card-title">Code Metrics</h4>
                 </div>
-                <div className="metrics-dashboard-grid">
-                  <div className="metric-box">
-                    <span className="m-label">LINES OF CODE</span>
-                    <span className="m-val">{analysisResult.metrics.linesOfCode}</span>
+                <div className="metrics-grid">
+                  <div className="metric-cell">
+                    <span className="metric-label">Lines of code</span>
+                    <span className="metric-value">{analysisResult.metrics.linesOfCode}</span>
                   </div>
-                  <div className="metric-box">
-                    <span className="m-val-cyan">{analysisResult.metrics.astNodesCount}</span>
-                    <span className="m-label">AST NODES</span>
+                  <div className="metric-cell">
+                    <span className="metric-label">AST nodes</span>
+                    <span className="metric-value">{analysisResult.metrics.astNodesCount}</span>
                   </div>
-                  <div className="metric-box">
-                    <span className="m-val-purple">{analysisResult.metrics.functions.total}</span>
-                    <span className="m-label">TOTAL FUNCTIONS</span>
-                    <span className="m-sub">
-                      {analysisResult.metrics.functions.declarations} decl / {analysisResult.metrics.functions.arrowFunctions} arrow
+                  <div className="metric-cell">
+                    <span className="metric-label">Functions</span>
+                    <span className="metric-value">{analysisResult.metrics.functions.total}</span>
+                    <span className="metric-sub">
+                      {analysisResult.metrics.functions.declarations} decl, {analysisResult.metrics.functions.arrowFunctions} arrow
                     </span>
                   </div>
-                  <div className="metric-box">
-                    <span className="m-val-emerald">{analysisResult.metrics.importsCount}</span>
-                    <span className="m-label">IMPORTS</span>
+                  <div className="metric-cell">
+                    <span className="metric-label">Imports</span>
+                    <span className="metric-value">{analysisResult.metrics.importsCount}</span>
                   </div>
-                  <div className="metric-box">
-                    <span className="m-val">{analysisResult.metrics.exportsCount}</span>
-                    <span className="m-label">EXPORTS</span>
+                  <div className="metric-cell">
+                    <span className="metric-label">Exports</span>
+                    <span className="metric-value">{analysisResult.metrics.exportsCount}</span>
                   </div>
-                  <div className="metric-box">
-                    <span className="m-val">{analysisResult.metrics.classesCount}</span>
-                    <span className="m-label">CLASSES</span>
+                  <div className="metric-cell">
+                    <span className="metric-label">Classes</span>
+                    <span className="metric-value">{analysisResult.metrics.classesCount}</span>
                   </div>
                 </div>
               </div>
 
-              {/* ESLint Code Quality Issues */}
-              <div className="findings-section">
-                <div className="section-header-row">
-                  <h4 className="findings-title">CODE QUALITY & LINT FINDINGS</h4>
-                  <span className={`badge-count ${analysisResult.issues.length > 0 ? 'active-count' : 'zero-count'}`}>
-                    {analysisResult.issues.length}
-                  </span>
+              {/* Lint & Code Quality Findings */}
+              <div className="results-card">
+                <div className="results-card-header">
+                  <h4 className="results-card-title">Lint Findings ({analysisResult.issues.length})</h4>
                 </div>
 
                 {analysisResult.issues.length === 0 ? (
-                  <div className="clean-findings-box">
-                    <span className="clean-check">✓</span>
-                    <span>No actionable code quality issues detected by the active linter rules.</span>
+                  <div className="clean-findings-message">
+                    <span className="clean-check-icon">✓</span>
+                    <span>No code quality or lint issues found.</span>
                   </div>
                 ) : (
                   <div className="findings-list">
@@ -307,13 +284,13 @@ export const CodeAnalysisView: React.FC = () => {
                         key={idx}
                         className={`finding-item ${issue.severity === 'error' ? 'lint-error' : 'lint-warn'}`}
                       >
-                        <div className="finding-meta-row">
-                          <span className={`severity-tag ${issue.severity}`}>
-                            {issue.severity.toUpperCase()}
+                        <div className="finding-meta">
+                          <span className={`severity-badge ${issue.severity}`}>
+                            {issue.severity === 'error' ? 'Error' : 'Warning'}
                           </span>
-                          <span className="finding-rule-tag">{issue.ruleId}</span>
-                          <span className="finding-loc">
-                            L{issue.line}:C{issue.column}
+                          <span className="finding-tag">{issue.ruleId}</span>
+                          <span className="finding-location">
+                            Line {issue.line}, Col {issue.column}
                           </span>
                         </div>
                         <div className="finding-message">{issue.message}</div>
