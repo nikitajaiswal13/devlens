@@ -24,8 +24,10 @@ const AppRoutes: React.FC = () => {
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/logout" element={<LogoutPage />} />
       </Route>
+
+      {/* Logout confirmation route */}
+      <Route path="/logout" element={<LogoutPage />} />
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />

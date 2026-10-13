@@ -16,7 +16,7 @@ export const LogoutPage: React.FC = () => {
 
   const handleConfirmLogout = () => {
     logout();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   return (
@@ -50,7 +50,7 @@ export const LogoutPage: React.FC = () => {
 
         <div className="logout-note">
           <span className="note-icon">ℹ</span>
-          <span>Signing out will revoke your active session and return you to the login screen. Any unsaved code in the editor buffer will be cleared.</span>
+          <span>Signing out will revoke your active session and return you to the home page. Any unsaved code in the editor buffer will be cleared.</span>
         </div>
 
         <footer className="logout-actions">
