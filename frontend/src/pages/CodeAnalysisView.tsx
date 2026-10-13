@@ -266,6 +266,88 @@ export const CodeAnalysisView: React.FC = () => {
                 </div>
               </div>
 
+              {/* Function Details & Complexity */}
+              <div className="results-card">
+                <div className="results-card-header">
+                  <h4 className="results-card-title">Function Details & Complexity</h4>
+                </div>
+                <div className="metrics-grid">
+                  <div className="metric-cell">
+                    <span className="metric-label">Total functions analyzed</span>
+                    <span className="metric-value">
+                      {analysisResult.metrics.functionDetails?.length ?? 0}
+                    </span>
+                  </div>
+                  <div className="metric-cell">
+                    <span className="metric-label">Avg cyclomatic complexity</span>
+                    <span className="metric-value">
+                      {typeof analysisResult.metrics.cyclomaticComplexity?.average === 'number' &&
+                      !Number.isNaN(analysisResult.metrics.cyclomaticComplexity.average)
+                        ? analysisResult.metrics.cyclomaticComplexity.average
+                        : 0}
+                    </span>
+                  </div>
+                  <div className="metric-cell">
+                    <span className="metric-label">Max cyclomatic complexity</span>
+                    <span className="metric-value">
+                      {typeof analysisResult.metrics.cyclomaticComplexity?.max === 'number' &&
+                      !Number.isNaN(analysisResult.metrics.cyclomaticComplexity.max)
+                        ? analysisResult.metrics.cyclomaticComplexity.max
+                        : 0}
+                    </span>
+                  </div>
+                </div>
+
+                {!analysisResult.metrics.functionDetails ||
+                analysisResult.metrics.functionDetails.length === 0 ? (
+                  <div className="no-functions-message">
+                    No functions detected.
+                  </div>
+                ) : (
+                  <div className="function-table-wrapper">
+                    <table className="function-table">
+                      <thead>
+                        <tr>
+                          <th>Function</th>
+                          <th>Line Range</th>
+                          <th>Lines</th>
+                          <th>Params</th>
+                          <th>Complexity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analysisResult.metrics.functionDetails.map((fn, idx) => (
+                          <tr key={`${fn.name}-${fn.startLine}-${idx}`}>
+                            <td>
+                              <span
+                                className={`function-name-cell ${fn.name === '<anonymous>' ? 'anonymous' : ''}`}
+                                title={fn.name}
+                              >
+                                {fn.name}
+                              </span>
+                            </td>
+                            <td className="function-mono-cell">
+                              {fn.startLine === fn.endLine ? `L${fn.startLine}` : `L${fn.startLine}–L${fn.endLine}`}
+                            </td>
+                            <td className="function-mono-cell">
+                              {fn.linesOfCode}
+                            </td>
+                            <td className="function-mono-cell">
+                              {fn.paramsCount}
+                            </td>
+                            <td>
+                              <span className="function-complexity-badge">
+                                {fn.cyclomaticComplexity}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
               {/* Lint & Code Quality Findings */}
               <div className="results-card">
                 <div className="results-card-header">

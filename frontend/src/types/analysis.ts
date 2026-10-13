@@ -25,11 +25,27 @@ export interface FunctionBreakdown {
   arrowFunctions: number;
 }
 
+export interface CyclomaticComplexityMetrics {
+  average: number;
+  max: number;
+}
+
+export interface FunctionDetailItem {
+  name: string;
+  startLine: number;
+  endLine: number;
+  linesOfCode: number;
+  paramsCount: number;
+  cyclomaticComplexity: number;
+}
+
 export interface CodeAnalysisMetrics {
   linesOfCode: number;
   byteSize: number;
   astNodesCount: number;
   functions: FunctionBreakdown;
+  cyclomaticComplexity: CyclomaticComplexityMetrics;
+  functionDetails: FunctionDetailItem[];
   importsCount: number;
   exportsCount: number;
   classesCount: number;

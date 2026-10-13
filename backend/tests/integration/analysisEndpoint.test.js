@@ -196,6 +196,8 @@ async function runIntegrationTests() {
       assert.strictEqual(data.data.errors[0].line, 1);
       assert.strictEqual(data.data.errors[0].column, 12);
       assert.deepStrictEqual(data.data.issues, []);
+      assert.deepStrictEqual(data.data.metrics.cyclomaticComplexity, { average: 0, max: 0 });
+      assert.deepStrictEqual(data.data.metrics.functionDetails, []);
       console.log(`✓ Test 8 Passed: Syntax error reported gracefully at Line ${data.data.errors[0].line}:${data.data.errors[0].column}`);
     }
 
@@ -240,7 +242,75 @@ async function runIntegrationTests() {
       console.log(`✓ Test 9 Passed: Real issue detection returned structured issues for unused vars and undefined refs`);
     }
 
-    console.log("\nAll 9 API endpoint integration tests passed successfully!");
+    // 10. Known cyclomatic complexity and detailed function metrics -> 200
+    {
+      const codeWithKnownComplexity = `
+        export function processTransaction(amount, type, isVerified) {
+          if (amount <= 0) {
+            return false;
+          }
+          if (type === 'refund' || type === 'reversal') {
+            return isVerified ? true : false;
+          }
+          return true;
+        }
+      `;
+      const res = await fetch(`${baseUrl}/api/analysis/analyze`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${validToken}`,
+        },
+        body: JSON.stringify({ code: codeWithKnownComplexity, filename: "transaction.js" }),
+      });
+      const data = await res.json();
+      assert.strictEqual(res.status, 200);
+      assert.strictEqual(data.success, true);
+      assert.strictEqual(data.data.parsed, true);
+      assert.strictEqual(data.data.metrics.cyclomaticComplexity.average, 5);
+      assert.strictEqual(data.data.metrics.cyclomaticComplexity.max, 5);
+      assert.strictEqual(data.data.metrics.functionDetails.length, 1);
+
+      const fn = data.data.metrics.functionDetails[0];
+      assert.strictEqual(fn.name, "processTransaction");
+      assert.strictEqual(fn.startLine, 2);
+      assert.strictEqual(fn.endLine, 10);
+      assert.strictEqual(fn.linesOfCode, 9);
+      assert.strictEqual(fn.paramsCount, 3);
+      assert.strictEqual(fn.cyclomaticComplexity, 5);
+      console.log("✓ Test 10 Passed: Function with known complexity returns accurate cyclomaticComplexity and functionDetails");
+    }
+
+    // 11. Code with no functions -> 200 with zero complexity and empty functionDetails
+    {
+      const codeNoFunctions = `
+        const config = {
+          apiUrl: "https://api.devlens.io",
+          timeout: 5000,
+          retries: 3,
+        };
+        export const MAX_RETRY_COUNT = config.retries;
+      `;
+      const res = await fetch(`${baseUrl}/api/analysis/analyze`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${validToken}`,
+        },
+        body: JSON.stringify({ code: codeNoFunctions, filename: "config.js" }),
+      });
+      const data = await res.json();
+      assert.strictEqual(res.status, 200);
+      assert.strictEqual(data.success, true);
+      assert.strictEqual(data.data.parsed, true);
+      assert.strictEqual(data.data.metrics.functions.total, 0);
+      assert.deepStrictEqual(data.data.metrics.functionDetails, []);
+      assert.strictEqual(data.data.metrics.cyclomaticComplexity.average, 0);
+      assert.strictEqual(data.data.metrics.cyclomaticComplexity.max, 0);
+      console.log("✓ Test 11 Passed: Code with no functions returns zero complexity and empty functionDetails");
+    }
+
+    console.log("\nAll 11 API endpoint integration tests passed successfully!");
   } finally {
     User.findById = originalFindById;
     server.close();
