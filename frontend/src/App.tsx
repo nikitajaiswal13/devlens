@@ -2,16 +2,18 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, PublicOnlyRoute } from './components/ProtectedRoute';
+import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { LogoutPage } from './pages/LogoutPage';
 import './App.css';
 
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Root route redirects to dashboard (which will redirect to login if unauthenticated) */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {/* Public Landing Page at root URL */}
+      <Route path="/" element={<LandingPage />} />
 
       {/* Public-only routes: Redirect to dashboard if already authenticated */}
       <Route element={<PublicOnlyRoute />}>
@@ -22,6 +24,7 @@ const AppRoutes: React.FC = () => {
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/logout" element={<LogoutPage />} />
       </Route>
 
       {/* Catch-all */}

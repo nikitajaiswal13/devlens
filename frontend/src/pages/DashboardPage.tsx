@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { CodeAnalysisView } from './CodeAnalysisView';
 
 type NavTab = 'overview' | 'code-analysis' | 'architecture-review' | 'history';
 
 export const DashboardPage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<NavTab>('overview');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogoutClick = () => {
+    navigate('/logout', { state: { from: location.pathname } });
+  };
 
   return (
     <div className="workspace-shell">
@@ -35,7 +42,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             <button
               type="button"
-              onClick={logout}
+              onClick={handleLogoutClick}
               className="workspace-signout-btn"
               title="Terminate authenticated session"
             >

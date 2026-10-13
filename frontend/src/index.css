@@ -1,38 +1,50 @@
-:root {
-  /* Technical Charcoal & Slate Foundation */
-  --bg-app: #0b0d11;
-  --bg-surface: #12151b;
-  --bg-surface-elevated: #181c24;
-  --bg-subtle: #1c212b;
-  --bg-editor: #090b0e;
+:root,
+[data-theme='dark'] {
+  /* Restrained Neutral Engineering Palette (Default Dark) */
+  --bg-app: #121417;
+  --bg-surface: #1a1d22;
+  --bg-surface-elevated: #21252b;
+  --bg-subtle: #282c34;
+  --bg-editor: #16181d;
   
-  --border-subtle: #1f2530;
-  --border-default: #28303e;
-  --border-focus: #495670;
+  --border-subtle: #262a32;
+  --border-default: #313640;
+  --border-focus: #4b5260;
 
   /* Typography */
-  --text-primary: #e6edf3;
-  --text-secondary: #8b949e;
-  --text-muted: #565f6d;
+  --text-primary: #e4e7eb;
+  --text-secondary: #9aa0a6;
+  --text-muted: #68707a;
 
-  /* Restrained Accents */
-  --accent-purple: #9d5cf7;
-  --accent-purple-glow: rgba(157, 92, 247, 0.15);
-  --accent-purple-border: rgba(157, 92, 247, 0.4);
-  
-  --accent-cyan: #38bdf8;
-  --accent-cyan-subtle: rgba(56, 189, 248, 0.12);
-  --accent-cyan-border: rgba(56, 189, 248, 0.35);
+  /* Single Restrained Accent: Clean Tech Slate Indigo / Deep Blue */
+  --accent: #4f78e0;
+  --accent-hover: #3d66ce;
+  --accent-subtle: rgba(79, 120, 224, 0.1);
+  --accent-border: rgba(79, 120, 224, 0.3);
 
-  --accent-emerald: #34d399;
-  --accent-amber: #fbbf24;
-  --accent-rose: #f87171;
+  /* Status Colors */
+  --status-success: #2ea043;
+  --status-warning: #d29922;
+  --status-error: #e5534b;
+  --status-error-bg: rgba(229, 83, 75, 0.08);
+  --status-error-border: rgba(229, 83, 75, 0.3);
+
+  /* Backward Compatibility Tokens for non-redesigned views */
+  --accent-purple: var(--accent);
+  --accent-purple-glow: var(--accent-subtle);
+  --accent-purple-border: var(--accent-border);
+  --accent-cyan: var(--accent);
+  --accent-cyan-subtle: var(--accent-subtle);
+  --accent-cyan-border: var(--accent-border);
+  --accent-emerald: var(--status-success);
+  --accent-amber: var(--status-warning);
+  --accent-rose: var(--status-error);
 
   /* Fonts */
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-  --mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", SFMono, Menlo, Consolas, monospace;
 
-  /* UI Tokens */
+  /* Geometry */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -46,6 +58,44 @@
   -webkit-font-smoothing: antialiased;
 }
 
+[data-theme='light'] {
+  /* Restrained Neutral Engineering Palette (Light Mode) */
+  --bg-app: #f6f8fa;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f0f2f5;
+  --bg-subtle: #e6e9ee;
+  --bg-editor: #f8f9fa;
+
+  --border-subtle: #e1e4e8;
+  --border-default: #d0d7de;
+  --border-focus: #8c959f;
+
+  /* Typography */
+  --text-primary: #1f2328;
+  --text-secondary: #57606a;
+  --text-muted: #6e7781;
+
+  /* Single Restrained Accent */
+  --accent: #2558c4;
+  --accent-hover: #1c46a6;
+  --accent-subtle: rgba(37, 88, 196, 0.08);
+  --accent-border: rgba(37, 88, 196, 0.25);
+
+  /* Status Colors */
+  --status-success: #1a7f37;
+  --status-warning: #9a6700;
+  --status-error: #cf222e;
+  --status-error-bg: rgba(207, 34, 46, 0.06);
+  --status-error-border: rgba(207, 34, 46, 0.25);
+
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -55,6 +105,7 @@ body {
   padding: 0;
   background-color: var(--bg-app);
   color: var(--text-primary);
+  font-family: var(--sans);
   overflow-x: hidden;
   min-height: 100vh;
 }
@@ -63,15 +114,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* Background grid utility */
-.tech-grid-bg {
-  background-color: var(--bg-app);
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
 }
 
 code, pre {
